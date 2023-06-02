@@ -1,14 +1,10 @@
 import { User } from "../models/User";
 import { verifyToken } from "../utils/token";
 
-// Typeorm
 import { AppDataSource } from "../database/typeorm-datasource";
 import { type Repository } from "typeorm";
 
-import {
-  type Response,
-  type NextFunction,
-} from "express";
+import { type Response, type NextFunction } from "express";
 
 const userRepository: Repository<User> = AppDataSource.getRepository(User);
 
@@ -17,7 +13,7 @@ export const isAuth = async (req: any, res: Response, next: NextFunction): Promi
     const token = req.headers.authorization?.replace("Bearer ", "");
 
     if (!token) {
-      throw new Error("No tienes autorización para realizar esta operación");
+      throw new Error("No se encontró el token de autorización");
     }
 
     const decodedInfo = verifyToken(token);
@@ -27,6 +23,7 @@ export const isAuth = async (req: any, res: Response, next: NextFunction): Promi
       },
       relations: ["bookings"],
     });
+
     if (!user) {
       throw new Error("No tienes autorización para realizar esta operación");
     }
@@ -34,6 +31,6 @@ export const isAuth = async (req: any, res: Response, next: NextFunction): Promi
     req.user = user;
     next();
   } catch (error) {
-    res.status(401).json("No tienes autorización para realizar esta operación");
+    res.status(403).json("No tienes autorización para realizar esta operación");
   }
 };
