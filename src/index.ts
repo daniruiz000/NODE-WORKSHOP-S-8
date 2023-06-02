@@ -6,9 +6,10 @@ import {
   type Response,
 } from "express";
 
-// import { techCompaniesRouter } from "./routes/techCompaniesRouter.routes";
-// import { studentRouter } from "./routes/student.routes";
-// import { courseRouter } from "./routes/course.routes";
+import { trainRouter } from "./routes/train.routes";
+import { userRouter } from "./routes/user.routes";
+import { bookingRouter } from "./routes/booking.routes";
+import { travelRouter } from "./routes/travel.routes";
 
 import { AppDataSource } from "./database/typeorm-datasource";
 
@@ -45,9 +46,10 @@ const main = async (): Promise<void> => {
   app.use(infoReq);
 
   // Usamos las rutas
-  //   app.use("/student", studentRouter);
-  //   app.use("/course", courseRouter);
-  //   app.use("/tech", techCompaniesRouter);
+  app.use("/user", userRouter);
+  app.use("/train", trainRouter);
+  app.use("/travel", travelRouter);
+  app.use("/booking", bookingRouter);
   app.use("/", router);
 
   // Middleware de gestión de los Errores.
