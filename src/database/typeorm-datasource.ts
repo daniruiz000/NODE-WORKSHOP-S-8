@@ -23,7 +23,7 @@ export const AppDataSource = new DataSource({
   port: 3306,
   synchronize: true,
   logging: false,
-  entities: [],
+  entities: [Train, Travel, User, Booking],
   migrations: [],
   subscribers: [],
 });
