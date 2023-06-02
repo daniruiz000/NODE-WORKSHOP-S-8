@@ -99,19 +99,23 @@ userRouter.post("/", async (req: Request, res: Response, next: NextFunction) => 
     // Construimos user
     const newUser = new User();
 
-    let bookingOfUser;
+    let bookingOfUser: Booking[]
+    const bookingArray: string[] = []
 
-    if (req.body.bookingId) {
-      bookingOfUser = await bookingRepository.find({
-        where: {
-          id: req.body.bookingId,
-        },
-      });
+    if (bookingArray) {
+      bookingArray.map(idRecived => {
+        const booking = await bookingRepository.find({
+          where: {
+            id: idRecived,
+          },
+        });
+        bookingOfUser.push(booking)
+      })
+    }
 
-      if (!bookingOfUser) {
-        res.status(404).json({ error: "Booking not found" });
-        return;
-      }
+    if (!bookingOfUser) {
+      res.status(404).json({ error: "Booking not found" });
+      return;
     }
 
     // Asignamos valores
