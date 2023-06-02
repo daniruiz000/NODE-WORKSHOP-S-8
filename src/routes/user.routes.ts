@@ -1,12 +1,11 @@
-import { Router, type NextFunction, type Request, type Response } from "express";
+import { Router, type Request, type Response, type NextFunction } from "express";
 import bcrypt from "bcrypt";
 
 import { User } from "../models/User";
 import { Booking } from "../models/Booking";
 
-// Typeorm
 import { AppDataSource } from "../database/typeorm-datasource";
-import { type Repository } from "typeorm";
+import { In, type Repository } from "typeorm";
 
 import { generateToken } from "../utils/token";
 import { isAuth } from "../middlewares/auth.middleware";
@@ -14,7 +13,6 @@ import { isAuth } from "../middlewares/auth.middleware";
 const userRepository: Repository<User> = AppDataSource.getRepository(User);
 const bookingRepository: Repository<Booking> = AppDataSource.getRepository(Booking);
 
-// Router
 export const userRouter = Router();
 
 // CRUD: READ
@@ -50,11 +48,9 @@ userRouter.get("/:id", async (req: Request, res: Response, next: NextFunction) =
   }
 });
 
-// LOGIN DE AUTORES
+// LOGIN DE USUARIOS
 userRouter.post("/login", async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // const email = req.body.email;
-    // const password = req.body.password;
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -69,19 +65,14 @@ userRouter.post("/login", async (req: Request, res: Response, next: NextFunction
     });
 
     if (!user) {
-      // return res.status(404).json({ error: "No existe un usuario con ese email" });
-      // Por seguridad mejor no indicar qué usuarios no existen
       return res.status(401).json({ error: "Email y/o contraseña incorrectos" });
     }
 
-    // Comprueba la pass
     const match = await bcrypt.compare(password, user.password);
     if (match) {
-      // Quitamos password de la respuesta
       const userWithoutPass: any = user.toObject();
       delete userWithoutPass.password;
 
-      // Generamos token JWT
       const jwtToken = generateToken(user.id.toString(), user.email);
 
       return res.status(200).json({ token: jwtToken });
@@ -94,35 +85,19 @@ userRouter.post("/login", async (req: Request, res: Response, next: NextFunction
 });
 
 // CRUD: CREATE
-userRouter.post("/", async (req: Request, res: Response, next: NextFunction) => {
+userRouter.post("/", isAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // Construimos user
     const newUser = new User();
+    const bookingIds: number[] = req.body.bookingIds;
 
-    let bookingOfUser: Booking[]
-    const bookingArray: string[] = []
+    const bookings = await bookingRepository.findBy({ id: In(bookingIds) });
 
-    if (bookingArray) {
-      bookingArray.map(idRecived => {
-        const booking = await bookingRepository.find({
-          where: {
-            id: idRecived,
-          },
-        });
-        bookingOfUser.push(booking)
-      })
-    }
-
-    if (!bookingOfUser) {
-      res.status(404).json({ error: "Booking not found" });
+    if (bookingIds.length !== bookings.length) {
+      res.status(404).json({ error: "One or more bookings not found" });
       return;
     }
 
-    // Asignamos valores
-    Object.assign(newUser, {
-      ...req.body,
-      bookings: bookingOfUser,
-    });
+    Object.assign(newUser, { ...req.body, bookings });
 
     const userSaved = await userRepository.save(newUser);
 
@@ -149,55 +124,53 @@ userRouter.delete("/:id", isAuth, async (req: any, res: Response, next: NextFunc
     });
 
     if (!userToRemove) {
-      res.status(404).json({ error: "User not found" });
-    } else {
-      await userRepository.remove(userToRemove);
-      res.json(userToRemove);
+      return res.status(404).json({ error: "User not found" });
     }
+
+    await userRepository.remove(userToRemove);
+
+    res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
     next(error);
   }
 });
 
+// CRUD: UPDATE
 userRouter.put("/:id", isAuth, async (req: any, res: Response, next: NextFunction) => {
   try {
-    const idReceivedInParams = req.params.id;
+    const idReceivedInParams = parseInt(req.params.id);
 
     if (req.user.id !== idReceivedInParams && req.user.email !== "admin@gmail.com") {
       return res.status(401).json({ error: "No tienes autorización para realizar esta operación" });
     }
-    const userToUpdate = await userRepository.findOneBy({
-      id: idReceivedInParams,
+
+    const userToUpdate = await userRepository.findOne({
+      where: {
+        id: idReceivedInParams,
+      },
+      relations: ["bookings"],
     });
 
     if (!userToUpdate) {
-      res.status(404).json({ error: "User not found" });
-    } else {
-      let bookingOfUser;
-
-      if (req.body.bookingId) {
-        bookingOfUser = await bookingRepository.findOne({
-          where: {
-            id: req.body.bookingId,
-          },
-        });
-
-        if (!bookingOfUser) {
-          res.status(404).json({ error: "Booking not found" });
-          return;
-        }
-      }
-
-      // Asignamos valores
-      Object.assign(userToUpdate, {
-        ...req.body,
-        bookings: bookingOfUser,
-      });
-
-      const updatedUser = await userRepository.save(userToUpdate);
-      res.json(updatedUser);
+      return res.status(404).json({ error: "User not found" });
     }
+
+    const bookingIds: number[] = req.body.bookingIds || [];
+    const bookings = await bookingRepository.findBy({ id: In(bookingIds) });
+
+    if (bookingIds.length !== bookings.length) {
+      return res.status(404).json({ error: "One or more bookings not found" });
+    }
+
+    Object.assign(userToUpdate, req.body);
+    userToUpdate.bookings = bookings;
+
+    const updatedUser = await userRepository.save(userToUpdate);
+
+    res.status(200).json(updatedUser);
   } catch (error) {
     next(error);
   }
 });
+
+export default userRouter;
