@@ -26,6 +26,6 @@ export class Travel {
   @OneToOne((type) => Train, (train) => train.travels)
   train: Train;
 
-  @OneToMany(type => Booking, booking => booking.travel, { cascade: true })
+  @OneToMany(type => Booking, booking => booking.travel)
     bookings: Booking[];
 }
