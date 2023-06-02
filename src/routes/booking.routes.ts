@@ -1,18 +1,17 @@
 import { Router, type NextFunction, type Request, type Response } from "express";
 
 // Typeorm
-import { Booking } from "../models/typeorm/Booking";
+import { Booking } from "../models/Booking";
 import { AppDataSource } from "../database/typeorm-datasource";
 import { type Repository } from "typeorm";
 
 const bookingRepository: Repository<Booking> = AppDataSource.getRepository(Booking);
-const userRepository: Repository<User> = AppDataSource.getRepository(User);
 
 // Router
-export const bookingRoutes = Router();
+export const bookingRouter = Router();
 
 // CRUD: Read
-bookingRoutes.get("/", async (req: Request, res: Response, next: NextFunction) => {
+bookingRouter.get("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const bookings: Booking[] = await bookingRepository.find({ relations: ["user", "travel"] });
 
@@ -27,7 +26,7 @@ bookingRoutes.get("/", async (req: Request, res: Response, next: NextFunction) =
 });
 
 // CRUD: Read with ID
-bookingRoutes.get("/:id", async (req: Request, res: Response, next: NextFunction) => {
+bookingRouter.get("/:id", async (req: Request, res: Response, next: NextFunction) => {
   try {
     // Recoge los parametros
     const idParam = parseInt(req.params.id);
@@ -50,7 +49,7 @@ bookingRoutes.get("/:id", async (req: Request, res: Response, next: NextFunction
 });
 
 // CRUD: Create
-bookingRoutes.post("/", async (req: Request, res: Response, next: NextFunction) => {
+bookingRouter.post("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
     // Creacion de objecto
     const newBooking = new Booking();
@@ -68,7 +67,7 @@ bookingRoutes.post("/", async (req: Request, res: Response, next: NextFunction) 
 });
 
 // CRUD: Delete with ID
-bookingRoutes.delete("/:id", async (req: Request, res: Response, next: NextFunction) => {
+bookingRouter.delete("/:id", async (req: Request, res: Response, next: NextFunction) => {
   try {
     // Recoge los parametros
     const idParam = parseInt(req.params.id);
@@ -84,7 +83,7 @@ bookingRoutes.delete("/:id", async (req: Request, res: Response, next: NextFunct
       res.status(404).json({ error: "Booking  not found" });
     }
 
-    await bookingRepository.remove(bookingToDelete);
+    await bookingRepository.remove(bookingToDelete as Booking);
     res.json(bookingToDelete);
   } catch (error) {
     next(error);
@@ -92,7 +91,7 @@ bookingRoutes.delete("/:id", async (req: Request, res: Response, next: NextFunct
 });
 
 // CRUD: Update/Put
-bookingRoutes.put("/:id", async (req: Request, res: Response, next: NextFunction) => {
+bookingRouter.put("/:id", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const idParam = parseInt(req.params.id);
     // Busca la reserva por ID

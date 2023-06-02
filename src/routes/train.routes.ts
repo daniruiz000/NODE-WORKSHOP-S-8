@@ -2,7 +2,7 @@ import { Router, type NextFunction, type Request, type Response } from "express"
 
 // Typeorm
 import { Train } from "../models/Train";
-import { AppDataSource } from "../databases/typeorm-datasource";
+import { AppDataSource } from "../database/typeorm-datasource";
 import { type Repository } from "typeorm";
 import { Travel } from "../models/Travel";
 

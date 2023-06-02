@@ -2,18 +2,18 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
 import { Travel } from "./Travel";
 
 enum Type {
-    AVE,
-    AVLO,
-    AVANT,
-    RENFE
+  AVE,
+  AVLO,
+  AVANT,
+  RENFE
 }
 
 @Entity()
 export class Train {
   @PrimaryGeneratedColumn()
     id: number;
-  
-    @Column()
+
+  @Column()
     licencePlate: string;
 
   @Column()
@@ -22,6 +22,6 @@ export class Train {
   @Column()
     type: Type;
 
-  @OneToMany(type => Travel, travel => Travel.travel)
+  @OneToMany(type => Travel, travel => travel.train)
     travels: Travel[];
 }

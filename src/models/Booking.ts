@@ -13,6 +13,6 @@ export class Booking {
   @ManyToOne(type => User, user => user.bookings)
     user: User;
 
-  @OneToOne(type => Travel, travel => travel.booking, { cascade: true })
+  @OneToOne(type => Travel, travel => travel.bookings, { cascade: true })
     travel: Travel;
 }
