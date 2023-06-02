@@ -1,10 +1,12 @@
 import { DataSource } from "typeorm";
-import "reflect-metadata"
+import "reflect-metadata";
 
-// import { Student } from "../models/typeorm/Student";
-// import { Course } from "../models/typeorm/Course";
+import { Travel } from "../models/Travel";
+import { User } from "../models/User";
+import { Train } from "../models/Train";
+import { Booking } from "../models/Booking";
 
-import dotenv from "dotenv"
+import dotenv from "dotenv";
 dotenv.config();
 
 const SQL_HOST: string = process.env.SQL_HOST as string;
@@ -24,4 +26,4 @@ export const AppDataSource = new DataSource({
   entities: [],
   migrations: [],
   subscribers: [],
-})
+});
