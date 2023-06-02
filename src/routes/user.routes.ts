@@ -1,6 +1,5 @@
 import { Router, type Request, type Response, type NextFunction } from "express";
 import bcrypt from "bcrypt";
-
 import { User } from "../models/User";
 import { Booking } from "../models/Booking";
 
@@ -49,6 +48,7 @@ userRouter.get("/:id", async (req: Request, res: Response, next: NextFunction) =
 });
 
 // LOGIN DE USUARIOS
+
 userRouter.post("/login", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, password } = req.body;
@@ -85,13 +85,17 @@ userRouter.post("/login", async (req: Request, res: Response, next: NextFunction
 });
 
 // CRUD: CREATE
-userRouter.post("/", isAuth, async (req: Request, res: Response, next: NextFunction) => {
+userRouter.post("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const newUser = new User();
-    const bookingIds: number[] = req.body.bookingIds;
+    const bookingIds: number[] = req.body.bookings;
 
-    const bookings = await bookingRepository.findBy({ id: In(bookingIds) });
+    if (!bookingIds || !Array.isArray(bookingIds)) {
+      res.status(400).json({ error: "Invalid bookingIds" });
+      return;
+    }
 
+    const bookings = await bookingRepository.findBy({ id: In(bookingIds) })
     if (bookingIds.length !== bookings.length) {
       res.status(404).json({ error: "One or more bookings not found" });
       return;
@@ -102,34 +106,6 @@ userRouter.post("/", isAuth, async (req: Request, res: Response, next: NextFunct
     const userSaved = await userRepository.save(newUser);
 
     res.status(201).json(userSaved);
-  } catch (error) {
-    next(error);
-  }
-});
-
-// CRUD: DELETE
-userRouter.delete("/:id", isAuth, async (req: any, res: Response, next: NextFunction) => {
-  try {
-    const idReceivedInParams = parseInt(req.params.id);
-
-    if (req.user.id !== idReceivedInParams && req.user.email !== "admin@gmail.com") {
-      return res.status(401).json({ error: "No tienes autorización para realizar esta operación" });
-    }
-
-    const userToRemove = await userRepository.findOne({
-      where: {
-        id: idReceivedInParams,
-      },
-      relations: ["bookings"],
-    });
-
-    if (!userToRemove) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    await userRepository.remove(userToRemove);
-
-    res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
     next(error);
   }
