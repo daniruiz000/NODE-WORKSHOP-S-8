@@ -23,8 +23,8 @@ export class Travel {
   @Column("datetime")
   arrive: Date;
 
-  @OneToOne()
-  train: string;
+  @OneToOne((type) => Train, (train) => train.travels)
+  train: Train;
 
   @ManyToOne((type) => Booking, (booking) => booking.travel)
   bookings: Booking;
