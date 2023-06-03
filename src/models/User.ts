@@ -1,3 +1,4 @@
+import bcrypt from "bcrypt";
 import {
   Entity, // Para hacer entidades
   PrimaryGeneratedColumn, // Para crear una columna id y autogenerada
@@ -14,10 +15,6 @@ export enum treatmentEnum {
 
 @Entity()
 export class User {
-  toObject(): any {
-    throw new Error("Method not implemented.")
-  }
-
   @PrimaryGeneratedColumn()
     id: number
 
@@ -27,8 +24,18 @@ export class User {
   @Column()
     lastName: string
 
-  @Column({ select: false })
-    password: string
+  @Column()
+    password: string;
+
+  setPassword(rawPassword: string): void {
+    const saltRounds = 10;
+    const salt = bcrypt.genSaltSync(saltRounds);
+    this.password = bcrypt.hashSync(rawPassword, salt);
+  }
+
+  checkPassword(rawPassword: string): boolean {
+    return bcrypt.compareSync(rawPassword, this.password);
+  }
 
   @Column({ unique: true })
     email: string

@@ -1,14 +1,14 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, BeforeInsert, BeforeUpdate } from "typeorm";
 import { Travel } from "./Travel";
 
-export enum Type {
+export enum typeEnum {
   AVE = "AVE",
   AVLO = "AVLO",
   AVANT = "AVANT",
   RENFE = "RENFE"
 }
 
-export enum Section {
+export enum sectionEnum {
   NORMAL = "NORMAL",
   BUSINESS = "BUSINESS",
   VIP = "VIP"
@@ -26,10 +26,10 @@ export class Train {
     capacity: number;
 
   @Column()
-    type: Type;
+    type: typeEnum;
 
   @Column()
-    section: Section;
+    section: sectionEnum;
 
   @OneToMany(type => Travel, travel => travel.train, { cascade: true })
     travels: Travel[];

@@ -1,119 +1,124 @@
 import { AppDataSource } from "../database/typeorm-datasource";
 
 import { User, treatmentEnum } from "../models/User";
-import { Section, Train, Type } from "../models/Train";
+import { sectionEnum, Train, typeEnum } from "../models/Train";
 import { Travel } from "../models/Travel";
 import { Booking } from "../models/Booking";
 
 export const renfeSeed = async (): Promise<void> => {
-  // Conectamos a la BBDD
-  const dataSource = await AppDataSource.initialize()
-  console.log(`Conectados a ${dataSource?.options?.database as string}`)
+  try {
+    // Conectamos a la BBDD
+    const dataSource = await AppDataSource.initialize(); // Conecta con BBDD
 
-  // Borramos los students
-  await AppDataSource.manager.delete(Booking, {})
-  await AppDataSource.manager.delete(Travel, {})
-  await AppDataSource.manager.delete(User, {})
-  await AppDataSource.manager.delete(Train, {})
+    console.log(`Conectados a ${dataSource?.options?.database as string}`);
 
-  console.log("Eliminados los datos existentes")
+    // Borramos los datos
+    await AppDataSource.manager.delete(Booking, {}); // Borra la tabla
+    await AppDataSource.manager.delete(Travel, {});
+    await AppDataSource.manager.delete(User, {});
+    await AppDataSource.manager.delete(Train, {});
 
-  // Crea usuarios de ejemplo
-  const user1 = new User();
-  user1.firstName = "John";
-  user1.lastName = "Doe";
-  user1.password = "password1";
-  user1.email = "john@example.com";
-  user1.dni = "123456789";
-  user1.nacionality = "US";
-  user1.birth_date = "1990-01-01";
-  user1.treatment = treatmentEnum.SR;
+    console.log("Eliminados los datos existentes");
 
-  const user2 = new User();
-  user2.firstName = "Jane";
-  user2.lastName = "Smith";
-  user2.password = "password2";
-  user2.email = "jane@example.com";
-  user2.dni = "987654321";
-  user2.nacionality = "UK";
-  user2.birth_date = "1995-02-15";
-  user2.treatment = treatmentEnum.SRA;
+    // Crea usuario administrador
+    const admin = new User();
+    admin.firstName = "admin";
+    admin.lastName = "admin";
+    admin.setPassword("admin");
+    admin.email = "admin@gmail.com";
+    admin.dni = "123456789";
+    admin.nacionality = "US";
+    admin.birth_date = "1990-01-01";
+    admin.treatment = treatmentEnum.SR;
 
-  const userEntity1 = AppDataSource.manager.create(User, user1)
-  const userEntity2 = AppDataSource.manager.create(User, user2)
-  const userSaved1 = await AppDataSource.manager.save(userEntity1)
-  const userSaved2 = await AppDataSource.manager.save(userEntity2)
+    await AppDataSource.manager.save(admin); // Guarda el admin en la tabla
+    console.log("Creado admin");
 
-  console.log("Creados users")
+    // Crea usuarios de ejemplo
+    const user1 = new User();
+    user1.firstName = "John";
+    user1.lastName = "Doe";
+    user1.setPassword("password1");
+    user1.email = "john@example.com";
+    user1.dni = "123456789";
+    user1.nacionality = "US";
+    user1.birth_date = "1990-01-01";
+    user1.treatment = treatmentEnum.SR;
 
-  // Crea trenes de ejemplo
-  const train1 = new Train();
-  train1.licencePlate = "ABC123";
-  train1.capacity = 100;
-  train1.type = Type.AVE;
-  train1.section = Section.NORMAL;
+    const user2 = new User();
+    user2.firstName = "Jane";
+    user2.lastName = "Smith";
+    user2.setPassword("password2");
+    user2.email = "jane@example.com";
+    user2.dni = "987654321";
+    user2.nacionality = "UK";
+    user2.birth_date = "1995-02-15";
+    user2.treatment = treatmentEnum.SRA;
 
-  const train2 = new Train();
-  train2.licencePlate = "DEF456";
-  train2.capacity = 200;
-  train2.type = Type.AVLO;
-  train2.section = Section.VIP;
+    await AppDataSource.manager.save([user1, user2]); // Podemos guardar como un array
+    console.log("Creados users");
 
-  const trainEntity1 = AppDataSource.manager.create(Train, train1)
-  const trainEntity2 = AppDataSource.manager.create(Train, train2)
-  const trainSaved1 = await AppDataSource.manager.save(trainEntity1)
-  const trainSaved2 = await AppDataSource.manager.save(trainEntity2)
+    // Crea trenes de ejemplo
+    const trainList: Train[] = [];
 
-  console.log("Creados trenes")
+    const train1 = new Train();
+    train1.licencePlate = "ABC123";
+    train1.capacity = 100;
+    train1.type = typeEnum.AVE;
+    train1.section = sectionEnum.NORMAL;
 
-  // Crea viajes de ejemplo
-  const travel1 = new Travel();
-  travel1.price = 50;
-  travel1.origin = "Madrid";
-  travel1.destination = "Barcelona";
-  travel1.departure = new Date("2023-06-05T10:00:00Z");
-  travel1.arrive = new Date("2023-06-05T14:00:00Z");
-  travel1.train = trainSaved1;
-  travel1.bookings = []
+    const train2 = new Train();
+    train2.licencePlate = "DEF456";
+    train2.capacity = 200;
+    train2.type = typeEnum.AVLO;
+    train2.section = sectionEnum.VIP;
 
-  const travel2 = new Travel();
-  travel2.price = 80;
-  travel2.origin = "Barcelona";
-  travel2.destination = "Seville";
-  travel2.departure = new Date("2023-06-07T09:00:00Z");
-  travel2.arrive = new Date("2023-06-07T16:00:00Z");
-  travel2.train = trainSaved2;
-  travel2.bookings = []
-  // Creamos entidad travel
+    trainList.push(train1, train2);
 
-  const travelEntity1 = AppDataSource.manager.create(Travel, travel1)
-  const travelEntity2 = AppDataSource.manager.create(Travel, travel2)
+    await AppDataSource.manager.save(trainList); // Podemos guardar nombrando al array directamente
+    console.log("Creados trains");
 
-  // Guardamos el travel en base de datos
-  const travel1Saved = await AppDataSource.manager.save(travelEntity1)
-  const travel2Saved = await AppDataSource.manager.save(travelEntity2)
+    // Crea viajes de ejemplo
+    const travel1 = new Travel();
+    travel1.price = 50;
+    travel1.origin = "Madrid";
+    travel1.destination = "Barcelona";
+    travel1.departure = new Date("2023-06-05T10:00:00Z");
+    travel1.arrive = new Date("2023-06-05T14:00:00Z");
+    travel1.train = train1;
+    travel1.bookings = [];
 
-  console.log("Creados travels")
+    const travel2 = new Travel();
+    travel2.price = 80;
+    travel2.origin = "Barcelona";
+    travel2.destination = "Seville";
+    travel2.departure = new Date("2023-06-07T09:00:00Z");
+    travel2.arrive = new Date("2023-06-07T16:00:00Z");
+    travel2.train = train2;
+    travel2.bookings = [];
 
-  // Crea reservas de ejemplo
-  const booking1 = new Booking();
-  booking1.paid = true;
-  booking1.user = userSaved1;
-  booking1.travel = travel1Saved;
+    await AppDataSource.manager.save([travel1, travel2]);
+    console.log("Creados travels");
 
-  const booking2 = new Booking();
-  booking2.paid = false;
-  booking2.user = userSaved2;
-  booking2.travel = travel2Saved;
+    // Crea reservas de ejemplo
+    const booking1 = new Booking();
+    booking1.paid = true;
+    booking1.user = user1;
+    booking1.travel = travel1;
 
-  // Creamos entidad course
-  const bookingEntity = AppDataSource.manager.create(Booking, [booking1, booking2])
+    const booking2 = new Booking();
+    booking2.paid = false;
+    booking2.user = user2;
+    booking2.travel = travel2;
 
-  // Guardamos el booking en base de datos
-  await AppDataSource.manager.save(bookingEntity)
-  console.log("Creados bookings")
-  await AppDataSource.destroy() // Cierra la BBDD
-}
+    await AppDataSource.manager.save([booking1, booking2]);
+    console.log("Creados bookings");
+    console.log("Fin Seed de Renfe");
+  } catch (error) {
+    console.log(error);
+  } finally {
+    await AppDataSource.destroy(); // Cierra la BBDD
+  }
+};
 
-// // Llama a la función para generar los datos de ejemplo
-void renfeSeed()
+void renfeSeed();
