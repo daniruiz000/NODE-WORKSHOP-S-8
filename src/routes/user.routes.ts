@@ -111,6 +111,32 @@ userRouter.post("/", async (req: Request, res: Response, next: NextFunction) => 
   }
 });
 
+// CRUD: DELETE
+userRouter.delete("/:id", isAuth, async (req: any, res: Response, next: NextFunction) => {
+  try {
+    const idReceivedInParams = parseInt(req.params.id);
+    if (req.user.id !== idReceivedInParams && req.user.email !== "admin@gmail.com") {
+      return res.status(401).json({ error: "No tienes autorización para realizar esta operación" });
+    }
+
+    const userToRemove = await userRepository.findOne({
+      where: {
+        id: idReceivedInParams,
+      },
+      relations: ["bookings"],
+    });
+
+    if (!userToRemove) {
+      res.status(404).json({ error: "user not found" });
+    } else {
+      await userRepository.remove(userToRemove);
+      res.json(userToRemove);
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
 // CRUD: UPDATE
 userRouter.put("/:id", isAuth, async (req: any, res: Response, next: NextFunction) => {
   try {
