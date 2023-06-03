@@ -1,7 +1,7 @@
 import { AppDataSource } from "../database/typeorm-datasource";
 
 import { User, treatmentEnum } from "../models/User";
-import { Train, Type } from "../models/Train";
+import { Section, Train, Type } from "../models/Train";
 import { Travel } from "../models/Travel";
 import { Booking } from "../models/Booking";
 
@@ -51,11 +51,13 @@ export const renfeSeed = async (): Promise<void> => {
   train1.licencePlate = "ABC123";
   train1.capacity = 100;
   train1.type = Type.AVE;
+  train1.section = Section.NORMAL;
 
   const train2 = new Train();
   train2.licencePlate = "DEF456";
   train2.capacity = 200;
   train2.type = Type.AVLO;
+  train2.section = Section.VIP;
 
   const trainEntity1 = AppDataSource.manager.create(Train, train1)
   const trainEntity2 = AppDataSource.manager.create(Train, train2)
