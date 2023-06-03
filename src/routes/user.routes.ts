@@ -1,5 +1,5 @@
 import { Router, type Request, type Response, type NextFunction } from "express";
-import bcrypt from "bcrypt";
+//  import bcrypt from "bcrypt";
 import { User } from "../models/User";
 import { Booking } from "../models/Booking";
 
@@ -18,7 +18,7 @@ export const userRouter = Router();
 userRouter.get("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const users: User[] = await userRepository.find({
-      relations: ["bookings"]
+      relations: ["bookings"],
     });
     res.json(users);
   } catch (error) {
@@ -61,18 +61,20 @@ userRouter.post("/login", async (req: Request, res: Response, next: NextFunction
       where: {
         email,
       },
-      relations: ["bookings"],
+      select: ["email", "id", "firstName", "password"],
     });
 
     if (!user) {
       return res.status(401).json({ error: "Email y/o contraseña incorrectos" });
     }
 
-    const match = await bcrypt.compare(password, user.password);
+    // const match = await bcrypt.compare(password, user.password);
+    const match = password === user.password;
     if (match) {
-      const userWithoutPass: any = user.toObject();
+      const userWithoutPass: any = user as any;
       delete userWithoutPass.password;
 
+      console.log(JSON.stringify(user));
       const jwtToken = generateToken(user.id.toString(), user.email);
 
       return res.status(200).json({ token: jwtToken });
@@ -95,7 +97,7 @@ userRouter.post("/", async (req: Request, res: Response, next: NextFunction) => 
       return;
     }
 
-    const bookings = await bookingRepository.findBy({ id: In(bookingIds) })
+    const bookings = await bookingRepository.findBy({ id: In(bookingIds) });
     if (bookingIds.length !== bookings.length) {
       res.status(404).json({ error: "One or more bookings not found" });
       return;
