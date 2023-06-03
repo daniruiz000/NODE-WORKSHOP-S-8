@@ -2,16 +2,16 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToMany, BeforeInsert, Before
 import { Travel } from "./Travel";
 
 export enum Type {
-  AVE,
-  AVLO,
-  AVANT,
-  RENFE
+  AVE = "AVE",
+  AVLO = "AVLO",
+  AVANT = "AVANT",
+  RENFE = "RENFE"
 }
 
 export enum Section {
-  NORMAL,
-  BUSINESS,
-  VIP
+  NORMAL = "NORMAL",
+  BUSINESS = "BUSINESS",
+  VIP = "VIP"
 }
 
 @Entity()
