@@ -7,7 +7,7 @@ import {
 
 import { Booking } from "./Booking"
 
-enum treatmentEnum {
+export enum treatmentEnum {
   SR = "Sr.",
   SRA = "Sra.",
 }
