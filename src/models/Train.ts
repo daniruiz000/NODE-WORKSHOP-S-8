@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, BeforeInsert, BeforeUpdate } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, BeforeInsert, BeforeUpdate, ManyToOne } from "typeorm";
 import { Travel } from "./Travel";
 
 enum Type {
@@ -25,6 +25,9 @@ export class Train {
   @OneToMany(type => Travel, travel => travel.train)
     travels: Travel[];
 
+  @OneToMany(type => Section, section => section.train, { cascade: true })
+    sections: Section[];
+
   @BeforeInsert()
   @BeforeUpdate()
 
@@ -40,4 +43,42 @@ export class Train {
       throw new Error("Licence plate must have three uppercase letters and three numbers in any order.");
     }
   }
+
+  validateSections(): void {
+    const sectionNames = this.sections.map(section => section.name);
+
+    if (sectionNames.length !== 3 || !sectionNames.includes("NORMAL") || !sectionNames.includes("BUSINESS") || !sectionNames.includes("VIP")) {
+      throw new Error("There must be exactly 3 sections: NORMAL, BUSINESS, and VIP.");
+    }
+
+    const normalSection = this.sections.find(section => section.name === "NORMAL");
+    if (normalSection && normalSection.price > 40) {
+      throw new Error("The price of the NORMAL section cannot exceed €40.");
+    }
+
+    const businessSection = this.sections.find(section => section.name === "BUSINESS");
+    if (businessSection && (businessSection.price <= 40 || businessSection.price > 80)) {
+      throw new Error("The price of the BUSINESS section must be between €41 and €80.");
+    }
+
+    const vipSection = this.sections.find(section => section.name === "VIP");
+    if (vipSection && (vipSection.price <= 80 || vipSection.price > 200)) {
+      throw new Error("The price of the VIP section must be between €81 and €200.");
+    }
+  }
+}
+
+@Entity()
+export class Section {
+  @PrimaryGeneratedColumn()
+    id: number;
+
+  @Column()
+    name: string;
+
+  @Column()
+    price: number;
+
+  @ManyToOne(type => Train, train => train.sections)
+    train: Train;
 }
