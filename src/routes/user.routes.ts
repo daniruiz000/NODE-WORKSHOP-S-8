@@ -1,10 +1,10 @@
 import { Router, type Request, type Response, type NextFunction } from "express";
-//  import bcrypt from "bcrypt";
+import { In, type Repository } from "typeorm";
+
 import { User } from "../models/User";
 import { Booking } from "../models/Booking";
 
 import { AppDataSource } from "../database/typeorm-datasource";
-import { In, type Repository } from "typeorm";
 
 import { generateToken } from "../utils/token";
 import { isAuth } from "../middlewares/auth.middleware";
@@ -14,11 +14,25 @@ const bookingRepository: Repository<Booking> = AppDataSource.getRepository(Booki
 
 export const userRouter = Router();
 
-// CRUD: READ
-userRouter.get("/", async (req: Request, res: Response, next: NextFunction) => {
+/* EXPLICACÓN:
+Cualquier persona puede registrarse, si no está registrado y logado no puede realizar ninguna acción.
+Un usuario registrado puede logarse para realizar ciertas acciones.
+Un usuario logado puede:
+ - Buscarse por id a sí mismo pero no tiene acceso a la info del resto de usuarios.
+ - Borrarse a sí mismo pero no a ningún otro.
+ - Actualizarse a sí mismo pero no a ningún otro.
+El admin logado puede realizar cualquier acción dentro del userRouter.
+*/
+
+// -------------------------------- CRUD: READ --------------------------------
+
+userRouter.get("/", isAuth, async (req: any, res: Response, next: NextFunction) => {
   try {
+    if (req.user.email !== "admin@gmail.com") {
+      return res.status(401).json({ error: "No tienes autorización para realizar esta operación" });
+    }
     const users: User[] = await userRepository.find({
-      relations: ["bookings"],
+      relations: ["bookings", "bookings.travel", "bookings.travel.train"],
     });
     res.json(users);
   } catch (error) {
@@ -26,19 +40,25 @@ userRouter.get("/", async (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-userRouter.get("/:id", async (req: Request, res: Response, next: NextFunction) => {
+// --------------------------- Endpoint para obtener Usuarios por ID --------------------------------
+
+userRouter.get("/:id", isAuth, async (req: any, res: Response, next: NextFunction) => {
   try {
     const idReceivedInParams = parseInt(req.params.id);
+
+    if (req.user.id !== idReceivedInParams && req.user.email !== "admin@gmail.com") {
+      return res.status(401).json({ error: "No tienes autorización para realizar esta operación" });
+    }
 
     const user = await userRepository.findOne({
       where: {
         id: idReceivedInParams,
       },
-      relations: ["bookings"],
+      relations: ["bookings", "bookings.travel", "bookings.travel.train"],
     });
 
     if (!user) {
-      res.status(404).json({ error: "User not found" });
+      return res.status(404).json({ error: "Usuario no encontrado" });
     }
 
     res.json(user);
@@ -47,7 +67,7 @@ userRouter.get("/:id", async (req: Request, res: Response, next: NextFunction) =
   }
 });
 
-// LOGIN DE USUARIOS
+// -------------------------- Endpoint de LOGIN de Usuarios --------------------------------
 
 userRouter.post("/login", async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -68,10 +88,10 @@ userRouter.post("/login", async (req: Request, res: Response, next: NextFunction
       return res.status(401).json({ error: "Email y/o contraseña incorrectos" });
     }
 
-    // const match = await bcrypt.compare(password, user.password);
-    const match = password === user.password;
+    const match = user.checkPassword(req.body.password);
+
     if (match) {
-      const userWithoutPass: any = user as any;
+      const userWithoutPass: any = user;
       delete userWithoutPass.password;
 
       console.log(JSON.stringify(user));
@@ -86,7 +106,8 @@ userRouter.post("/login", async (req: Request, res: Response, next: NextFunction
   }
 });
 
-// CRUD: CREATE
+// -------------------------------- CRUD: CREATE --------------------------------
+
 userRouter.post("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const newUser = new User();
@@ -97,13 +118,18 @@ userRouter.post("/", async (req: Request, res: Response, next: NextFunction) => 
       return;
     }
 
-    const bookings = await bookingRepository.findBy({ id: In(bookingIds) });
+    const bookings = await bookingRepository.find({
+      where: { id: In(bookingIds) },
+    });
+
     if (bookingIds.length !== bookings.length) {
       res.status(404).json({ error: "One or more bookings not found" });
       return;
     }
 
-    Object.assign(newUser, { ...req.body, bookings });
+    Object.assign(newUser, req.body);
+    newUser.setPassword(req.body.password);
+    newUser.bookings = bookings;
 
     const userSaved = await userRepository.save(newUser);
 
@@ -113,10 +139,12 @@ userRouter.post("/", async (req: Request, res: Response, next: NextFunction) => 
   }
 });
 
-// CRUD: DELETE
+// -------------------------------- CRUD: DELETE por Id --------------------------------
+
 userRouter.delete("/:id", isAuth, async (req: any, res: Response, next: NextFunction) => {
   try {
     const idReceivedInParams = parseInt(req.params.id);
+
     if (req.user.id !== idReceivedInParams && req.user.email !== "admin@gmail.com") {
       return res.status(401).json({ error: "No tienes autorización para realizar esta operación" });
     }
@@ -125,7 +153,7 @@ userRouter.delete("/:id", isAuth, async (req: any, res: Response, next: NextFunc
       where: {
         id: idReceivedInParams,
       },
-      relations: ["bookings"],
+      relations: ["bookings", "bookings.travel", "bookings.travel.train"],
     });
 
     if (!userToRemove) {
@@ -139,7 +167,8 @@ userRouter.delete("/:id", isAuth, async (req: any, res: Response, next: NextFunc
   }
 });
 
-// CRUD: UPDATE
+// -------------------------------- CRUD: UPDATE --------------------------------
+
 userRouter.put("/:id", isAuth, async (req: any, res: Response, next: NextFunction) => {
   try {
     const idReceivedInParams = parseInt(req.params.id);
@@ -152,7 +181,7 @@ userRouter.put("/:id", isAuth, async (req: any, res: Response, next: NextFunctio
       where: {
         id: idReceivedInParams,
       },
-      relations: ["bookings"],
+      relations: ["bookings", "bookings.travel", "bookings.travel.train"],
     });
 
     if (!userToUpdate) {
@@ -160,18 +189,24 @@ userRouter.put("/:id", isAuth, async (req: any, res: Response, next: NextFunctio
     }
 
     const bookingIds: number[] = req.body.bookingIds || [];
-    const bookings = await bookingRepository.findBy({ id: In(bookingIds) });
+    const bookings = await bookingRepository.find({
+      where: { id: In(bookingIds) },
+    });
 
     if (bookingIds.length !== bookings.length) {
       return res.status(404).json({ error: "One or more bookings not found" });
     }
 
     Object.assign(userToUpdate, req.body);
+
     userToUpdate.bookings = bookings;
 
     const updatedUser = await userRepository.save(userToUpdate);
 
-    res.status(200).json(updatedUser);
+    // Eliminar la propiedad 'password' del objeto 'updatedUser'
+    const { password, ...userWithoutPassword } = updatedUser;
+
+    res.status(200).json(userWithoutPassword);
   } catch (error) {
     next(error);
   }

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/indent */
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne } from "typeorm";
 import { Booking } from "./Booking";
 import { Train } from "./Train";
@@ -6,25 +5,25 @@ import { Train } from "./Train";
 @Entity()
 export class Travel {
   @PrimaryGeneratedColumn()
-  id: number;
+    id: number;
 
   @Column()
-  price: number;
+    price: number;
 
   @Column()
-  origin: string;
+    origin: string;
 
   @Column()
-  destination: string;
+    destination: string;
 
   @Column("datetime")
-  departure: Date;
+    departure: Date;
 
   @Column("datetime")
-  arrive: Date;
+    arrive: Date;
 
   @ManyToOne((type) => Train, (train) => train.travels)
-  train: Train;
+    train: Train;
 
   @OneToMany(type => Booking, booking => booking.travel, { cascade: true })
     bookings: Booking[];
