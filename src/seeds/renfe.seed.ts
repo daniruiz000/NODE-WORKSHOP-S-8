@@ -93,7 +93,7 @@ export const renfeSeed = async (): Promise<void> => {
   const travel1Saved = await AppDataSource.manager.save(travelEntity1)
   const travel2Saved = await AppDataSource.manager.save(travelEntity2)
 
-  console.log("Creados los travels")
+  console.log("Creados travels")
 
   // Crea reservas de ejemplo
   const booking1 = new Booking();

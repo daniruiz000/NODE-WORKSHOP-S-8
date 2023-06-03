@@ -29,7 +29,7 @@ export class Train {
     type: Type;
 
   @Column()
-    section: Section
+    section: Section;
 
   @OneToMany(type => Travel, travel => travel.train, { cascade: true })
     travels: Travel[];
