@@ -1,0 +1,474 @@
+{
+	"info": {
+		"_postman_id": "e89ee066-f3b9-4484-918b-d534ec5cfc93",
+		"name": "NODE AVEcrem API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27124395"
+	},
+	"item": [
+		{
+			"name": "Travel",
+			"item": [
+				{
+					"name": "Travel List",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/travel",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"travel"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Travel by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/travel/2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"travel",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Travel",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"price\": 65,\n    \"origin\": \"Zaragoza\",\n    \"destination\": \"Madrid\",\n    \"departure\": \"2023-06-03 13:45:00\",\n    \"arrive\": \"2023-06-03 16:30:00\",\n    \"train\": 2,\n    \"bookings\": []\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/travel",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"travel"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Travel",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Chinese\",\n    \"department\": \"languages\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/travel/2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"travel",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Travel",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/travel/3",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"travel",
+								"3"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Train",
+			"item": [
+				{
+					"name": "Train List",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/train",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"train"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Train by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/train/2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"train",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Train",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"licencePlate\": \"AVC223\",\n\"capacity\": \"152\",\n\"type\": \"AVANT\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/train",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"train"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Train",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"licencePlate\": \"AVC223\",\n\"capacity\": \"120\",\n\"type\": \"AVANT\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/train/2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"train",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Train",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/train/3",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"train",
+								"3"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "User List",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/user",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/user/7",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"firstName\": \"Andres\",\n\"lastName\": \"Jimenez\",\n\"password\": \"password4\",\n\"email\": \"andres@example.com\",\n\"dni\": \"123483789\",\n\"nacionality\": \"SPAIN\",\n\"birth_date\": \"1998-04-15\",\n\"treatment\": \"SR\",\n\"bookings\": []\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/user",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjciLCJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJpYXQiOjE2ODU3ODk4MDQsImV4cCI6MTY4NTg3NjIwNH0.ZJ9wPujQ--aHZW0GgGqmldOJh_NC1F_nBKYTq0_M6a4",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"firstName\": \"Prueba2\"\n\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/user/7",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjciLCJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJpYXQiOjE2ODU3ODk4MDQsImV4cCI6MTY4NTg3NjIwNH0.ZJ9wPujQ--aHZW0GgGqmldOJh_NC1F_nBKYTq0_M6a4",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/user/7",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Booking",
+			"item": [
+				{
+					"name": "Booking List",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/booking",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"booking"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Booking by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/booking/15",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"booking",
+								"15"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Booking",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"paid\": 1,\n\"user\": 6,\n\"travel\": 29\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/booking",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"booking"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Booking",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"paid\": 1,\n\"user\": 6,\n\"travel\": 28\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/booking/16",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"booking",
+								"16"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Booking",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/booking/16",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"booking",
+								"16"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
