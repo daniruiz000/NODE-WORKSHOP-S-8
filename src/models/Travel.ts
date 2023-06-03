@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/indent */
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, OneToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne } from "typeorm";
 import { Booking } from "./Booking";
 import { Train } from "./Train";
 
@@ -23,9 +23,9 @@ export class Travel {
   @Column("datetime")
   arrive: Date;
 
-  @OneToOne((type) => Train, (train) => train.travels)
+  @ManyToOne((type) => Train, (train) => train.travels)
   train: Train;
 
-  @OneToMany(type => Booking, booking => booking.travel)
+  @OneToMany(type => Booking, booking => booking.travel, { cascade: true })
     bookings: Booking[];
 }

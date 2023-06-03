@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToOne } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
 import { Travel } from "./Travel";
 import { User } from "./User";
 
@@ -13,6 +13,6 @@ export class Booking {
   @ManyToOne(type => User, user => user.bookings)
     user: User;
 
-  @OneToOne(type => Travel, travel => travel.bookings, { cascade: true })
+  @ManyToOne(type => Travel, travel => travel.bookings)
     travel: Travel;
 }

@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
 import { Travel } from "./Travel";
 
-enum Type {
+export enum Type {
   AVE,
   AVLO,
   AVANT,
@@ -22,6 +22,6 @@ export class Train {
   @Column()
     type: Type;
 
-  @OneToMany(type => Travel, travel => travel.train)
+  @OneToMany(type => Travel, travel => travel.train, { cascade: true })
     travels: Travel[];
 }

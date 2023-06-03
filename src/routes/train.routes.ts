@@ -15,7 +15,7 @@ export const trainRouter = Router();
 // CRUD: READ
 trainRouter.get("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const trains: Train[] = await trainRepository.find({ relations: ["travel"] });
+    const trains: Train[] = await trainRepository.find({ relations: ["travels"] });
     res.json(trains);
   } catch (error) {
     next(error);
@@ -30,7 +30,7 @@ trainRouter.get("/:id", async (req: Request, res: Response, next: NextFunction) 
       where: {
         id: idReceivedInParams,
       },
-      relations: ["travel"],
+      relations: ["travels"],
     });
 
     if (!train) {
