@@ -62,14 +62,14 @@ export const renfeSeed = async (): Promise<void> => {
     const trainList: Train[] = [];
 
     const train1 = new Train();
-    train1.licencePlate = "ABC123";
-    train1.capacity = 100;
+    train1.validateLicencePlate("ABC123");
+    train1.validateCapacity(100);
     train1.type = typeEnum.AVE;
     train1.section = sectionEnum.NORMAL;
 
     const train2 = new Train();
-    train2.licencePlate = "DEF456";
-    train2.capacity = 200;
+    train2.validateLicencePlate("DEF456");
+    train2.validateCapacity(200);
     train2.type = typeEnum.AVLO;
     train2.section = sectionEnum.VIP;
 
@@ -80,7 +80,7 @@ export const renfeSeed = async (): Promise<void> => {
 
     // Crea viajes de ejemplo
     const travel1 = new Travel();
-    travel1.price = 50;
+    travel1.validatePrice(50);
     travel1.origin = "Madrid";
     travel1.destination = "Barcelona";
     travel1.departure = new Date("2023-06-05T10:00:00Z");
@@ -89,7 +89,7 @@ export const renfeSeed = async (): Promise<void> => {
     travel1.bookings = [];
 
     const travel2 = new Travel();
-    travel2.price = 80;
+    travel2.validatePrice(80);
     travel2.origin = "Barcelona";
     travel2.destination = "Sevilla";
     travel2.departure = new Date("2023-06-07T09:00:00Z");

@@ -27,4 +27,12 @@ export class Travel {
 
   @OneToMany(type => Booking, booking => booking.travel, { cascade: true })
     bookings: Booking[];
+
+  validatePrice(rawPrice: number): void {
+    if (rawPrice < 0) {
+      throw new Error("El precio no puede ser negativo")
+    } else {
+      this.price = rawPrice
+    }
+  }
 }
