@@ -24,9 +24,9 @@ export const renfeSeed = async (): Promise<void> => {
     const admin = new User();
     admin.firstName = "admin";
     admin.lastName = "admin";
-    admin.setPassword("admin");
-    admin.email = "admin@gmail.com";
-    admin.dni = "123456789";
+    admin.setPassword("adminstrador1");
+    admin.validateEmail("admin@gmail.com");
+    admin.validateDni("11111111A");
     admin.nacionality = "US";
     admin.birth_date = "1990-01-01";
     admin.treatment = treatmentEnum.SR;
@@ -36,21 +36,21 @@ export const renfeSeed = async (): Promise<void> => {
 
     // Crea usuarios de ejemplo
     const user1 = new User();
-    user1.firstName = "John";
-    user1.lastName = "Doe";
+    user1.validateFirstName("John");
+    user1.validateLastName("Doe");
     user1.setPassword("password1");
-    user1.email = "john@example.com";
-    user1.dni = "123456789";
+    user1.validateEmail("john@example.com");
+    user1.validateDni("55555555U");
     user1.nacionality = "US";
     user1.birth_date = "1990-01-01";
     user1.treatment = treatmentEnum.SR;
 
     const user2 = new User();
-    user2.firstName = "Jane";
-    user2.lastName = "Smith";
+    user2.validateFirstName("Jane");
+    user2.validateLastName("Smith");
     user2.setPassword("password2");
-    user2.email = "jane@example.com";
-    user2.dni = "987654321";
+    user2.validateEmail("jane@example.com");
+    user2.validateDni("88888888P");
     user2.nacionality = "UK";
     user2.birth_date = "1995-02-15";
     user2.treatment = treatmentEnum.SRA;
@@ -91,7 +91,7 @@ export const renfeSeed = async (): Promise<void> => {
     const travel2 = new Travel();
     travel2.price = 80;
     travel2.origin = "Barcelona";
-    travel2.destination = "Seville";
+    travel2.destination = "Sevilla";
     travel2.departure = new Date("2023-06-07T09:00:00Z");
     travel2.arrive = new Date("2023-06-07T16:00:00Z");
     travel2.train = train2;

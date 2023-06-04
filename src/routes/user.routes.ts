@@ -107,12 +107,8 @@ userRouter.post("/login", async (req: Request, res: Response, next: NextFunction
 userRouter.post("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const newUser = new User();
-    const bookingIds: number[] = req.body.bookings;
+    const bookingIds: number[] = req.body.bookings || [];
 
-    if (!bookingIds.length) {
-      res.status(400).json({ error: "Invalid bookingIds" });
-      return;
-    }
     const user = await userRepository.findOne({
       where: { email: req.body.email },
     });
@@ -132,11 +128,15 @@ userRouter.post("/", async (req: Request, res: Response, next: NextFunction) => 
     }
 
     Object.assign(newUser, req.body);
+    newUser.validateFirstName(req.body.firstName)
+    newUser.validateLastName(req.body.lastName)
+    newUser.validateEmail(req.body.email)
     newUser.setPassword(req.body.password);
+    newUser.validateDni(req.body.dni)
     newUser.bookings = bookings;
 
     const userSaved = await userRepository.save(newUser);
-
+    userSaved.password = req.body.password
     res.status(201).json(userSaved);
   } catch (error) {
     next(error);
