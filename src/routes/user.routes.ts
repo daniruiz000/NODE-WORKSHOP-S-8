@@ -91,12 +91,8 @@ userRouter.post("/login", async (req: Request, res: Response, next: NextFunction
     const match = user.checkPassword(req.body.password);
 
     if (match) {
-      const userWithoutPass: any = user;
-      delete userWithoutPass.password;
-
-      console.log(JSON.stringify(user));
       const jwtToken = generateToken(user.id.toString(), user.email);
-
+      console.log(`Usuario ${user.firstName} logado correctamente`);
       return res.status(200).json({ token: jwtToken });
     } else {
       return res.status(401).json({ error: "Email y/o contraseña incorrectos" });
@@ -113,8 +109,16 @@ userRouter.post("/", async (req: Request, res: Response, next: NextFunction) => 
     const newUser = new User();
     const bookingIds: number[] = req.body.bookings;
 
-    if (!bookingIds || !Array.isArray(bookingIds)) {
+    if (!bookingIds.length) {
       res.status(400).json({ error: "Invalid bookingIds" });
+      return;
+    }
+    const user = await userRepository.findOne({
+      where: { email: req.body.email },
+    });
+
+    if (user) {
+      res.status(400).json({ error: "Invalid params" });
       return;
     }
 
