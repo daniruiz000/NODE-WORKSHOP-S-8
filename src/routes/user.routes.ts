@@ -202,7 +202,11 @@ userRouter.put("/:id", isAuth, async (req: any, res: Response, next: NextFunctio
     }
 
     Object.assign(userToUpdate, req.body);
-
+    userToUpdate.validateFirstName(req.body.firstName)
+    userToUpdate.validateLastName(req.body.lastName)
+    userToUpdate.validateEmail(req.body.email)
+    userToUpdate.setPassword(req.body.password);
+    userToUpdate.validateDni(req.body.dni)
     userToUpdate.bookings = bookings;
 
     const updatedUser = await userRepository.save(userToUpdate);
